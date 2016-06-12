@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 
 public class PanelManager : MonoBehaviour
 {
@@ -181,16 +182,16 @@ public class PanelManager : MonoBehaviour
     }
 
     
-    /// <summary> 消息中插入换行符 </summary>
+    /// <summary> 对话内容换行 </summary>
     private string InsertWrap(string message)
     {
-        string wrapMessage = message;
+        StringBuilder wrapMessage = new StringBuilder(message);
         int interval = m_hanCount;
-        for (int i = interval; i < message.Length; i += (interval + 1))
+        for (int i = interval; i < wrapMessage.Length; i += (interval + 1))
         {
-            wrapMessage = wrapMessage.Insert(i, "\n");
+            wrapMessage.Insert(i, "\n");
         }
-        return wrapMessage;
+        return wrapMessage.ToString();
     }
 
     /// <summary> 生成bubble </summary>

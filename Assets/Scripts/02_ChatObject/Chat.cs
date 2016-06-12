@@ -2,11 +2,13 @@
 {
     public float time;
     public string message;
+    
+    private const float timeOfEveryChar = 0.1f;
     public Chat(string m_message)
     {
         message = m_message;
         // 弹出对话等待时间，每个汉字0.1s.
-        time = m_message.Length * 0.1f;
+        time = m_message.Length * timeOfEveryChar;
     }
 
     public void AddChatBubble(PanelManager pm, ChatPerson cp)
@@ -17,6 +19,6 @@
 	public static void CreatChat(ChatManager cm, string message)
 	{
 		Chat chat = new Chat(message);
-        cm.m_leftChats.Add(chat);
+        cm.m_leftChats.Enqueue(chat);
 	}
 }

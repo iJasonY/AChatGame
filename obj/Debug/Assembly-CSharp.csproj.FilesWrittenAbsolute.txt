@@ -1,0 +1,17 @@
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/wuqingxuan/UnityWork/AChatGame/obj/Debug/Assembly-CSharp.dll
+/Users/wuqingxuan/UnityWork/AChatGame/obj/Debug/Assembly-CSharp.dll.mdb
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/UnityEngine.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/UnityEditor.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Mono.Cecil.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.DataContract.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Mono.Cecil.Pdb.dll

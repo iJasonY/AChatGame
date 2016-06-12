@@ -7,7 +7,8 @@ public class ChatManager : MonoBehaviour
 {
     public ChatPerson cp = new ChatPerson(true);
     public PanelManager pm;
-    public List<Chat> m_leftChats = new List<Chat>();
+    
+    public Queue<Chat> m_leftChats = new Queue<Chat>();
     /// <summary> 计时器 </summary>
     public float timer = -3f;
 
@@ -27,17 +28,17 @@ public class ChatManager : MonoBehaviour
             pm.ShowChoicePanel(false);
 
             timer += Time.deltaTime;
-            // 若List不为空，且计时器时间到，继续下一句.
-            while (m_leftChats.Count > 0 && timer >= m_leftChats[0].time)
+            // 若队列不为空，且计时器时间到，继续下一句.
+            while (m_leftChats.Count > 0 && timer >= m_leftChats.Peek().time)
             {
-                // 先进先出，执行List头部元素
-                Chat item = m_leftChats[0];
+                // 先进先出，执行头部元素
+                Chat item = m_leftChats.Peek();
 
                 item.AddChatBubble(pm, cp);
 
-                //计时器复位，删除List头部元素
+                //计时器复位，删除头部元素
                 timer = -0.5f;
-                m_leftChats.RemoveAt(0);
+                m_leftChats.Dequeue();
             }
             pm.m_isChoice = false;
         }
