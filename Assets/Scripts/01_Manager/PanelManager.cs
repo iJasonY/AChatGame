@@ -31,15 +31,14 @@ public class PanelManager : MonoBehaviour
     private float m_newBubblePosY;
 
     /// <summary> 已弹出对话的总高度 </summary>
-    private float m_popedBubblesHeights = 0f;
+    private float m_popedBubblesHeights = 0.0f;
 
     /// <summary> 对话框底边的posY </summary>
     private float m_chatPanelBottomposY = -515f;
-    /// <summary> 对话框高度 </summary>
-    private float m_chatPanelHeight = 1100f;
-
-    private bool m_isStartScroll = false;
-    private bool m_isScrolling = false;
+    /// <summary> 由下落转换到向上滚屏状态 </summary>
+    private bool m_isFromFallToScrollUp = false;
+    /// <summary> 处在向上滚屏状态 </summary>
+    private bool m_isScrollingUp = false;
     public bool m_isChoice = true;
     private string m_selectedChoiceButton;
     private Dictionary<string, Action<string>> m_choose;
@@ -220,18 +219,19 @@ public class PanelManager : MonoBehaviour
         if ((m_popedBubblesHeights + m_newBubbleHeight) <= m_scrollLimitHeight)
         {
             // 若已弹出的Bubble和即将插入的新Bubble总高度没达到滚屏限制高度， 
-            // Bubble的posY从m_firstBubblePosY开始下移.
+            // 新Bubble的posY从m_firstBubblePosY开始下移，下移距离是新Bubble高度。
             m_newBubblePosY = m_firstBubblePosY - m_popedBubblesHeights;
+            m_popedBubblesHeights += m_newBubbleHeight;
         }
         // ------------------------------------------------------------ //
         // 下落结束，新Bubble插在对话框底端，向上滚屏.
         else
         {
-            m_isStartScroll = true;
+            m_isFromFallToScrollUp = true;
             CheckAndScrollBubbles(m_newBubbleHeight);
             m_newBubblePosY = m_chatPanelBottomposY + m_newBubbleHeight;
         }
-        m_popedBubblesHeights += m_newBubbleHeight;
+
         return m_newBubblePosY;
     }
 
@@ -240,14 +240,14 @@ public class PanelManager : MonoBehaviour
     {
         /// <summary> 第一次滚屏时，对话框的高度增量。除第一次外，以后的对话框高度增量是新Bubble的高度 </summary>
         float m_deltaHeight = m_newBubbleHeight - (m_originChatPanelHeight - m_popedBubblesHeights);
-        if (m_isStartScroll)
+        if (m_isFromFallToScrollUp)
         {
-            if (!m_isScrolling)
+            if (!m_isScrollingUp)
             {
                 HeightenChatPanel(m_deltaHeight);
                 m_chatPanelBottomposY -= m_deltaHeight / 2;
                 ScrollBubbles(m_deltaHeight);
-                m_isScrolling = true;
+                m_isScrollingUp = true;
             }
             else
             {
@@ -259,12 +259,15 @@ public class PanelManager : MonoBehaviour
     }
 
     /// <summary> 增大对话框高度 </summary>
-    private void HeightenChatPanel(float m_step)
+    private void HeightenChatPanel(float deltaHeight)
     {
-        m_chatPanelHeight += m_step;
-        m_chatPanel.sizeDelta = new Vector2(800, m_chatPanelHeight);
+        // 暂存旧对话框高度
+        var chatPanelHeight = m_chatPanel.sizeDelta.y;
+        chatPanelHeight += deltaHeight;
+        // 更新对话框高度
+        m_chatPanel.sizeDelta = new Vector2(m_chatPanel.sizeDelta.x, chatPanelHeight);
     }
-    /// <summary> 向上移动各个Bubble </summary>
+    /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
     private void ScrollBubbles(float m_step)
     {
         foreach (Button view in m_chatBubbles)

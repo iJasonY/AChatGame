@@ -7,7 +7,7 @@
     public Chat(string m_message)
     {
         message = m_message;
-        // 弹出对话等待时间，每个汉字0.1s.
+        // 对话等待时间，每个汉字0.1s.
         time = m_message.Length * timeOfEveryChar;
     }
 
