@@ -5,54 +5,69 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 
+// 发送按钮背景图片类型
+public enum SendButtonImageType
+{
+    ENABLE = 0,
+    DISABLE
+}
+
 public class PanelManager : MonoBehaviour
 {
-    public GameObject m_handle;
-    public ChatManager cm;
+    //==============================================================================================
+    // Fields
+    public ChatManager m_chatManager;
+    public SoundManager m_soundManager;
+
     public GameObject m_topPanel;
-    public Text m_sendText;
+    // 待发送消息
+    public Text m_waitForSendText;
     public Button m_sendButton;
     public Text m_topText;
     public Button m_leftBubblePrefab;
     public Button m_rightBubblePrefab;
 
+    public Button m_eventBubblePrefab;
+
     public RectTransform m_chatPanel;
     public ScrollRect m_panelScroll;
-
-    /// <summary> manage bubbles </summary>
-    public List<Button> m_chatBubbles = new List<Button>();
-    public List<Button> m_choiceButtons = new List<Button>();
-    public SoundManager m_sm;
-
+    public GameObject m_handle;
     private Text m_bubbleText;
+    /// <summary> 对话气泡 </summary>
     private Button m_bubble;
+
+    /// <summary> 已弹出的对话气泡 </summary>
+    public List<Button> m_popedChatBubbles = new List<Button>();
+    public List<Button> m_choiceButtons = new List<Button>();
+
     /// <summary> 单行对话气泡高度（Button） </summary>
     private float m_bubbleCellHeight = 78.91891f + 20f;
-    private float m_newBubblePosY;
-
     /// <summary> 已弹出对话的总高度 </summary>
     private float m_popedBubblesHeights = 0.0f;
+    /// <summary> 新弹出对话气泡的posY </summary>
+    private float m_newBubblePosY;
 
     /// <summary> 对话框底边的posY </summary>
     private float m_chatPanelBottomposY = -515f;
+    /// <summary> 对话Bubble的posX坐标 </summary>
+    public float m_leftBubbleposX = -360f;
+
     /// <summary> 由下落转换到向上滚屏状态 </summary>
     private bool m_isFromFallToScrollUp = false;
     /// <summary> 处在向上滚屏状态 </summary>
     private bool m_isScrollingUp = false;
     public bool m_isChoice = true;
-    private string m_selectedChoiceButton;
+    // 用户点击的选择按钮名字
+    private string m_seletedButtonName;
     private Dictionary<string, Action<string>> m_choose;
     private Image m_sendButtonImage;
     /// <summary> 发送按钮背景图片 </summary>
-    public List<Sprite> m_buttonSprites = new List<Sprite>();
-    // public List<Sprite> m_feelingSprites = new List<Sprite>();
-    // public Button m_feelingButton;
-    private Image m_feelingButtonImg;
-    
+    public List<Sprite> m_sendButtonSprites = new List<Sprite>();
+
 
 
     //==============================================================================================
-    // 公开方法
+    // public methods
 
     void Start()
     {
@@ -60,133 +75,121 @@ public class PanelManager : MonoBehaviour
         #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             m_handle.SetActive(false);
         #endif
+
         m_topText = m_topPanel.GetComponentInChildren<Text>();
         m_sendButtonImage = m_sendButton.GetComponent<Image>();
-        // m_feelingButtonImg = m_feelingButton.GetComponent<Image>();
 
         m_topText.text = "Boss";
-        SetSendButton(1, false);
-        // SetFeelingButton(0);
+        SetSendButtonState(SendButtonImageType.DISABLE, false);
     }
-    /// <summary> 设置表情状态 </summary>
-    // public void SetFeelingButton(int i)
-    // {
-    //     m_feelingButtonImg.sprite = m_feelingSprites[i];
-    // }
-    /// <summary> 设置发送按钮状态 </summary>
-    public void SetSendButton(int i, bool m_isInteractable)
-    {
-        m_sendButtonImage.sprite = m_buttonSprites[i];
-        m_sendButton.interactable = m_isInteractable;
-    }
-    
-    /// <summary> 选择面板 </summary>
-    public void Choice(Dictionary<string, Action<string>> m_choices)
-    {
-        // TODO: 显示选择面板
-        ShowChoicePanel(true);
-        m_choose = m_choices;
-        List<string> keys = new List<string>(m_choices.Keys);
 
+    /// <summary> 设置发送按钮状态 </summary>
+    public void SetSendButtonState(SendButtonImageType spriteType, bool isInteractable)
+    {
+        int indexOfSprite = (int)spriteType;
+        m_sendButtonImage.sprite = m_sendButtonSprites[indexOfSprite];
+        m_sendButton.interactable = isInteractable;
+    }
+
+    /// <summary> 设置选择面板 </summary>
+    public void SetChoice(Dictionary<string, Action<string>> choices)
+    {
+        // 显示选择面板
+        ShowChoicePanel(true);
+        m_choose = choices;
+
+        List<string> keys = new List<string>(choices.Keys);
         for (int i = 0; i < keys.Count; i++)
         {
             int buttonIndex = i;
-            if (m_choices.ContainsKey(keys[i]))
+            if (choices.ContainsKey(keys[i]))
             {
                 m_choiceButtons[i].GetComponentInChildren<Text>().text = keys[i];
                 // 清空已绑定的方法.
                 m_choiceButtons[i].onClick.RemoveAllListeners();
-                // 不能直接用m_choices[keys[[i]](keys[i])，否则会报错, m_choices[key](param).
-                // m_choiceButtons[i].onClick.AddListener(() => m_choices[keys[buttonIndex]](keys[buttonIndex]));
+                // 给选择按钮绑定ShowSendText()方法
                 m_choiceButtons[i].onClick.AddListener(() => ShowSendText(keys[buttonIndex]));
             }
         }
 
     }
 
-    
-    /// <summary> Add one new chat Bubble </summary>
-    public void AddNewBubble(bool m_isLeftBubble, string message)
+    /// <summary> 弹出对话 </summary>
+    public void PopChat(Button prefabType, float posX, string message)
     {
+        // 移动滑动条到底端
         StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
-
-        if (m_isLeftBubble)
-        {
-            InstantiateBubble(m_leftBubblePrefab, m_leftBubbleposX, message);
-            // Play Sound
-            m_sm.PlayMusic(m_sm.m_leftAudio);
-        }
-        else
-        {
-            InstantiateBubble(m_rightBubblePrefab, m_rightBubbleposX, message);
-            m_sm.PlayMusic(m_sm.m_rightAudio);
-            //TODO: 隐藏选择面板
-            if (cm.m_leftChats.Count == 0)
-            {
-                m_isChoice = true;
-                ShowChoicePanel(false);
-            }
-        }
+        InstantiateBubble(prefabType, posX, message);
+        m_soundManager.PlayMusic(m_soundManager.m_leftAudio);
 
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-        string text = InsertWrap(message);
-        m_bubbleText.text = text;
-
+        m_bubbleText.text = InsertWrap(message);
         m_bubble.transform.SetParent(m_chatPanel, false);
-        m_chatBubbles.Add(m_bubble);
-
+        m_popedChatBubbles.Add(m_bubble);
+        
     }
+    /// <summary> 隐藏消息选择面板 </summary>
+    public void HideChoicePanel()
+    {
+        // 隐藏选择面板
+        if (m_chatManager.m_leftChats.Count == 0)
+        {
+            m_isChoice = true;
+            ShowChoicePanel(false);
+        }
+    }
+
     /// <summary> 显示消息选择面板 </summary>
     public void ShowChoicePanel(bool isActive)
     {
-        foreach (Button item in m_choiceButtons)
+        for (int i = 0; i < m_choiceButtons.Count; i++)
         {
-            item.gameObject.SetActive(isActive);
+            m_choiceButtons[i].gameObject.SetActive(isActive);
         }
     }
 
-
     //==============================================================================================
-    // 非公开方法 
-    
+    // private methods
+
     /// <summary> 显示待发送的消息 </summary>
     private void ShowSendText(string message)
     {
-        m_sendText.text = message;
-        SetSendButton(0, true);
-        m_selectedChoiceButton = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+        m_waitForSendText.text = message;
+        // 发送按钮激活
+        SetSendButtonState(SendButtonImageType.ENABLE, true);
+        m_seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
     }
     /// <summary> 发送消息 </summary>
-    private void SendMessage(Dictionary<string, Action<string>> m_choices)
+    private void SendMessage(Dictionary<string, Action<string>> choices)
     {
-        string m_seletedButtonName = m_selectedChoiceButton;
-        List<string> keys = new List<string>(m_choices.Keys);
+        List<string> keys = new List<string>(choices.Keys);
         m_sendButton.onClick.RemoveAllListeners();
-        
-        if (keys.Count >= 2)
+        // 给发送按钮绑定方法
+        if (keys.Count == 2)
         {
             switch (m_seletedButtonName)
             {
-                case m_choice1:
-                    m_sendButton.onClick.AddListener(() => m_choices[keys[0]](keys[0]));
+                case mc_choiceOne:
+                    m_sendButton.onClick.AddListener(() => choices[keys[0]](keys[0]));
                     break;
-                case m_choice2:
-                    m_sendButton.onClick.AddListener(() => m_choices[keys[1]](keys[1]));
+                case mc_choiceTwo:
+                    m_sendButton.onClick.AddListener(() => choices[keys[1]](keys[1]));
                     break;
-
                 default:
                     break;
             }
         }
+        else
+        {
+            Debug.LogError("选择内容与选择按钮数量不匹配");
+        }
     }
 
-    
     /// <summary> 对话内容换行 </summary>
     private string InsertWrap(string message)
     {
         StringBuilder wrapMessage = new StringBuilder(message);
-        int interval = m_hanCount;
-        for (int i = interval; i < wrapMessage.Length; i += (interval + 1))
+        for (int i = mc_chineseCharacterCount; i < wrapMessage.Length; i += (mc_chineseCharacterCount + 1))
         {
             wrapMessage.Insert(i, "\n");
         }
@@ -194,66 +197,66 @@ public class PanelManager : MonoBehaviour
     }
 
     /// <summary> 生成bubble </summary>
-    private void InstantiateBubble(Button BubblePrefab, float posX, string message)
+    private void InstantiateBubble(Button bubblePrefab, float posX, string message)
     {
-        int heightFactor = message.Length / m_hanCount;
+        int heightFactor = message.Length / mc_chineseCharacterCount;
         float newBubbleHeight = m_bubbleCellHeight;
         // 消息包含两行文字，其bubble高度。
         if (heightFactor == 1)
         {
-            newBubbleHeight += m_secondTextLineHeight;
+            newBubbleHeight += mc_secondTextLineHeight;
         }
         // 消息包含三行及以上文字，其bubble高度。
         if (heightFactor > 1)
         {
-            newBubbleHeight += m_secondTextLineHeight + (heightFactor - 1) * m_textLineHeight;
+            newBubbleHeight += mc_secondTextLineHeight + (heightFactor - 1) * mc_textLineHeight;
         }
 
-        m_bubble = Instantiate(BubblePrefab) as Button;
+        m_bubble = Instantiate(bubblePrefab) as Button;
         m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, GetNewBubblePosY(newBubbleHeight));
     }
 
     /// <summary> 计算新插入对话的Bubble的posY </summary>
-    private float GetNewBubblePosY(float m_newBubbleHeight)
+    private float GetNewBubblePosY(float newBubbleHeight)
     {
-        if ((m_popedBubblesHeights + m_newBubbleHeight) <= m_scrollLimitHeight)
+        if ((m_popedBubblesHeights + newBubbleHeight) <= mc_originChatPanelHeight)
         {
             // 若已弹出的Bubble和即将插入的新Bubble总高度没达到滚屏限制高度， 
             // 新Bubble的posY从m_firstBubblePosY开始下移，下移距离是新Bubble高度。
-            m_newBubblePosY = m_firstBubblePosY - m_popedBubblesHeights;
-            m_popedBubblesHeights += m_newBubbleHeight;
+            m_newBubblePosY = mc_firstBubblePosY - m_popedBubblesHeights;
+            m_popedBubblesHeights += newBubbleHeight;
         }
         // ------------------------------------------------------------ //
         // 下落结束，新Bubble插在对话框底端，向上滚屏.
         else
         {
             m_isFromFallToScrollUp = true;
-            CheckAndScrollBubbles(m_newBubbleHeight);
-            m_newBubblePosY = m_chatPanelBottomposY + m_newBubbleHeight;
+            CheckAndScrollBubbles(newBubbleHeight);
+            m_newBubblePosY = m_chatPanelBottomposY + newBubbleHeight;
         }
 
         return m_newBubblePosY;
     }
 
     /// <summary> 检查是否滚屏，并更新对话框的底边posY </summary>
-    private void CheckAndScrollBubbles(float m_newBubbleHeight)
+    private void CheckAndScrollBubbles(float newBubbleHeight)
     {
         /// <summary> 第一次滚屏时，对话框的高度增量。除第一次外，以后的对话框高度增量是新Bubble的高度 </summary>
-        float m_deltaHeight = m_newBubbleHeight - (m_originChatPanelHeight - m_popedBubblesHeights);
+        float m_deltaHeight = newBubbleHeight - (mc_originChatPanelHeight - m_popedBubblesHeights);
         if (m_isFromFallToScrollUp)
         {
             if (!m_isScrollingUp)
             {
                 HeightenChatPanel(m_deltaHeight);
                 m_chatPanelBottomposY -= m_deltaHeight / 2;
-                ScrollBubbles(m_deltaHeight);
+                ScrollUpBubbles(m_deltaHeight);
                 m_isScrollingUp = true;
             }
             else
             {
-                HeightenChatPanel(m_newBubbleHeight);
-                m_chatPanelBottomposY -= m_newBubbleHeight / 2;
-                ScrollBubbles(m_newBubbleHeight);
+                HeightenChatPanel(newBubbleHeight);
+                m_chatPanelBottomposY -= newBubbleHeight / 2;
+                ScrollUpBubbles(newBubbleHeight);
             }
         }
     }
@@ -261,20 +264,20 @@ public class PanelManager : MonoBehaviour
     /// <summary> 增大对话框高度 </summary>
     private void HeightenChatPanel(float deltaHeight)
     {
-        // 暂存旧对话框高度
+        // 暂存当前对话框高度
         var chatPanelHeight = m_chatPanel.sizeDelta.y;
         chatPanelHeight += deltaHeight;
         // 更新对话框高度
         m_chatPanel.sizeDelta = new Vector2(m_chatPanel.sizeDelta.x, chatPanelHeight);
     }
     /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
-    private void ScrollBubbles(float m_step)
+    private void ScrollUpBubbles(float step)
     {
-        foreach (Button view in m_chatBubbles)
+        for (int i = 0; i < m_popedChatBubbles.Count; i++)
         {
-            float posX = view.GetComponent<RectTransform>().anchoredPosition.x;
-            float posY = view.GetComponent<RectTransform>().anchoredPosition.y;
-            view.GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + m_step / 2);
+            float posX = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.x;
+            float posY = m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition.y;
+            m_popedChatBubbles[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, posY + step / 2.0f);
         }
     }
     /// <summary> 移动滑动条到底部 </summary>
@@ -291,11 +294,11 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
     {
         #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
         #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-          TouchInput();
+            TouchInput();
         #endif
         SendMessage(m_choose);
     }
@@ -328,23 +331,18 @@ public class PanelManager : MonoBehaviour
     //==============================================================================================
     // 常量
 
-    /// <summary> 对话Bubble的posX坐标 </summary>
-    private const float m_leftBubbleposX = -360f;
-    private const float m_rightBubbleposX = 360f;
-
+    
     /// <summary> 对话框高度: 从m_firstBubblePosY到m_chatPanelBottomposY </summary>
-    private const float m_originChatPanelHeight = 945f;
+    private const float mc_originChatPanelHeight = 945f;
 
     /// <summary> 第一条对话的PosY </summary>
-    private const float m_firstBubblePosY = 430f;
-    /// <summary> 滚屏限制高度 </summary>
-    private const float m_scrollLimitHeight = 950f;
-    /// <summary> 单行文字的高度, 需要随字体类型和字体大小手动改变 </summary>
-    private const float m_textLineHeight = 38.919f;
-    private const float m_secondTextLineHeight = 39.6487f;
+    private const float mc_firstBubblePosY = 430f;
+    private const float mc_textLineHeight = 38.919f;
+    private const float mc_secondTextLineHeight = 39.6487f;
     /// <summary> 每行显示最大汉字个数 </summary>
-    private const int m_hanCount = 18;
-    /// <summary> 选择对话框中两个Button的名字，声明为常量，避免字符串拼写错误引起的bug </summary>
-    private const string m_choice1 = "Choice1";
-    private const string m_choice2 = "Choice2";
+    private const int mc_chineseCharacterCount = 18;
+    /// <summary> 选择对话框中两个Button的名字 </summary>
+    private const string mc_choiceOne = "ChoiceButtonOne";
+    private const string mc_choiceTwo = "ChoiceButtonTwo";
+
 }

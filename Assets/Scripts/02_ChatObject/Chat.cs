@@ -1,19 +1,27 @@
 ﻿public class Chat
 {
-    public float time;
-    public string message;
-    
-    private const float timeOfEveryChar = 0.1f;
-    public Chat(string m_message)
+    //==============================================================================================
+    // Fields
+    public float m_delayTime;   // 每句话延时
+    public string m_message;
+    private const float mc_timeOfEveryChar = 0.1f;  // 每个汉字延时0.1s
+
+    //==============================================================================================
+    // Methods
+    public Chat(string message)
     {
-        message = m_message;
-        // 对话等待时间，每个汉字0.1s.
-        time = m_message.Length * timeOfEveryChar;
+        m_message = message;
+        m_delayTime = m_message.Length * mc_timeOfEveryChar;
     }
 
-    public void AddChatBubble(PanelManager pm, ChatPerson cp)
+    public void TextChat(PanelManager pm)
     {
-        pm.AddNewBubble(cp.m_isLeftBubble, message);
+        pm.PopChat(pm.m_leftBubblePrefab, pm.m_leftBubbleposX, m_message);
+    }
+
+    public void TextEvent(PanelManager pm)
+    {
+        // pm.PopEvent(m_message);
     }
 	
 	public static void CreatChat(ChatManager cm, string message)

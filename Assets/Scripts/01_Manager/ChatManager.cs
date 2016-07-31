@@ -1,19 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
-using System;
 
 public class ChatManager : MonoBehaviour
 {
-    public ChatPerson cp = new ChatPerson(true);
-    public PanelManager pm;
-    
+    //==============================================================================================
+    // Fields
+    public PanelManager m_pm;
     public Queue<Chat> m_leftChats = new Queue<Chat>();
-    /// <summary> 计时器 </summary>
-    public float timer = -3f;
+    private float m_timer = -3.0f;
 
-
-    // Update is called once per frame
+    //==============================================================================================
+    // Methods
+    
     void Update()
     {
         Step();
@@ -24,32 +22,32 @@ public class ChatManager : MonoBehaviour
     {
         if (m_leftChats.Count > 0)
         {
-            pm.m_topText.text = "对方正在输入...";
-            pm.ShowChoicePanel(false);
+            m_pm.m_topText.text = "对方正在输入...";
+            m_pm.ShowChoicePanel(false);
 
-            timer += Time.deltaTime;
+            m_timer += Time.deltaTime;
             // 若队列不为空，且计时器时间到，继续下一句.
-            while (m_leftChats.Count > 0 && timer >= m_leftChats.Peek().time)
+            while (m_leftChats.Count > 0 && m_timer >= m_leftChats.Peek().m_delayTime)
             {
                 // 先进先出，执行头部元素
                 Chat item = m_leftChats.Peek();
 
-                item.AddChatBubble(pm, cp);
+                item.TextChat(m_pm);
 
                 //计时器复位，删除头部元素
-                timer = -0.5f;
+                m_timer = -0.5f;
                 m_leftChats.Dequeue();
             }
-            pm.m_isChoice = false;
+            m_pm.m_isChoice = false;
         }
         else
         {
-            if (!pm.m_isChoice)
+            if (!m_pm.m_isChoice)
             {
-                pm.ShowChoicePanel(true);
-                pm.m_isChoice = true;
+                m_pm.ShowChoicePanel(true);
+                m_pm.m_isChoice = true;
             }
-            pm.m_topText.text = "Boss";
+            m_pm.m_topText.text = "Boss";
         }
     }
 }

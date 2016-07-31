@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
-    public AudioClip m_leftAudio;
-    public AudioClip m_rightAudio;
-    private AudioSource m_audio;
+	//==============================================================================================
+    // Fields
+	
+    public AudioClip m_leftAudio;	// 左侧发送消息声音
+    public AudioClip m_rightAudio;	// 右侧发送消息声音
+    private AudioSource m_audioSource;
 	public Button m_setSoundButton;
 	public List<Sprite> m_soundButtonImgs = new List<Sprite>();
 	
@@ -15,31 +17,33 @@ public class SoundManager : MonoBehaviour
 	private bool m_soundIsActive = true;
 	private Image m_soundButtonImage;
 
-    // Use this for initialization
+    //==============================================================================================
+    // Methods
+	
     void Start()
     {
-        m_audio = this.GetComponent<AudioSource>();
+        m_audioSource = this.GetComponent<AudioSource>();
 		m_setSoundButton.onClick.AddListener(()=> SetSound());
 		m_soundButtonImage = m_setSoundButton.GetComponent<Image>();
 		m_soundButtonImage.sprite = m_soundButtonImgs[0];
     }
-
+	/// <summary> 发送消息时，播放声音 </summary>
     public void PlayMusic(AudioClip clip)
     {
-        m_audio.PlayOneShot(clip, 1.0f);
+        m_audioSource.PlayOneShot(clip, 1.0f);
     }
 	/// <summary> 关闭/打开声音 </summary>
 	private void SetSound()
 	{
 		if (m_soundIsActive)
 		{
-			m_audio.volume = 0f;
+			m_audioSource.volume = 0.0f;
 			m_soundIsActive = false;
 			m_soundButtonImage.sprite = m_soundButtonImgs[1];
 		}
 		else
 		{
-			m_audio.volume = 1f;
+			m_audioSource.volume = 1.0f;
 			m_soundIsActive = true;
 			m_soundButtonImage.sprite = m_soundButtonImgs[0];
 		}

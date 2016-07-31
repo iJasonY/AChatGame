@@ -1,3 +1,5 @@
-Demo:   
+# A Chat Game
 
-![](http://ww1.sinaimg.cn/large/7ef76e20gw1f3o0q1pji2g20a90i10vn.gif)
+  
+用Unity开发的一个模拟微信聊天游戏，设计参考了[Emily is Away](http://emilyisaway.com/)（Unity） 和 [Coming Out Simulator 2014](http://ncase.me/cos/)（JavaScript，HTML/CSS），采用[Skech](https://www.sketchapp.com/)完成界面和原型设计。  
+
