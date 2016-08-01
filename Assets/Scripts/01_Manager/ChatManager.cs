@@ -6,6 +6,7 @@ public class ChatManager : MonoBehaviour
     //==============================================================================================
     // Fields
     public PanelManager m_pm;
+    public string m_chatObjectName;
     public Queue<Chat> m_leftChats = new Queue<Chat>();
     private float m_timer = -3.0f;
 
@@ -47,7 +48,7 @@ public class ChatManager : MonoBehaviour
                 m_pm.ShowChoicePanel(true);
                 m_pm.m_isChoice = true;
             }
-            m_pm.m_topText.text = "Boss";
+            m_pm.m_topText.text = m_chatObjectName;
         }
     }
 }

@@ -71,6 +71,11 @@ public class PanelManager : MonoBehaviour
 
     void Start()
     {
+        Initialize();
+    }
+
+    void Initialize()
+    {
         // 初始化对话框
         #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             m_handle.SetActive(false);
@@ -79,9 +84,22 @@ public class PanelManager : MonoBehaviour
         m_topText = m_topPanel.GetComponentInChildren<Text>();
         m_sendButtonImage = m_sendButton.GetComponent<Image>();
 
-        m_topText.text = "Boss";
+        m_topText.text = m_chatManager.m_chatObjectName;
         SetSendButtonState(SendButtonImageType.DISABLE, false);
+        ClearPopedBubble();
     }
+    // 删除聊天数据
+    public void ClearPopedBubble()
+    {
+        foreach (var popedBubble in m_popedChatBubbles)
+        {
+            Destroy(popedBubble.gameObject);
+        }
+        m_popedChatBubbles.Clear();
+        m_newBubblePosY = mc_firstBubblePosY;
+        m_popedBubblesHeights = 0.0f;
+    }
+    
 
     /// <summary> 设置发送按钮状态 </summary>
     public void SetSendButtonState(SendButtonImageType spriteType, bool isInteractable)
@@ -115,18 +133,29 @@ public class PanelManager : MonoBehaviour
     }
 
     /// <summary> 弹出对话 </summary>
-    public void PopChat(Button prefabType, float posX, string message)
+    public void PopChat(Button prefabType, float posX, string message, AudioClip audioType)
     {
         // 移动滑动条到底端
         StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
         InstantiateBubble(prefabType, posX, message);
-        m_soundManager.PlayMusic(m_soundManager.m_leftAudio);
+        m_soundManager.PlayMusic(audioType);
 
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
         m_bubbleText.text = InsertWrap(message);
         m_bubble.transform.SetParent(m_chatPanel, false);
         m_popedChatBubbles.Add(m_bubble);
         
+    }
+
+    public void PopEvent(string message)
+    {
+        StartCoroutine(WaitForPopEvent(message, 2.0f));
+    }
+
+    IEnumerator WaitForPopEvent(string message, float time)
+    {
+        yield return new WaitForSeconds(time);
+        PopChat(m_eventBubblePrefab, -320.0f, message, null);
     }
     /// <summary> 隐藏消息选择面板 </summary>
     public void HideChoicePanel()

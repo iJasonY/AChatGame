@@ -2,153 +2,163 @@
 using System;
 using System.Collections.Generic;
 
-public class Content01 : BaseContent
+public class Emily: BaseText
 {
-    private EventObject m_eventObject = new EventObject();
+    
     //==============================================================================================
     // Methods
-    void Start()
+
+    public void StartChatWithEmily()
     {
-        left.Say(m_cm, "在吗？");
-        content2();
-        // emoji = {{smile,"^_^"},};
-       
+        m_cm.m_chatObjectName = "Emily";
+        Chat2();     
     }
 
-    void content2()
+    void Chat2()
     {
          right.Choose(m_pm, new Dictionary<string, Action<string>> {
-            {"什么事啊？", message => {
+            {"在吗？", message => {
             right.Say(m_pm, message);
-            content3();}},
+            Chat3();}},
 
-            {"在", message => {
+            {"Hi, emlily!", message => {
             right.Say(m_pm, message);
-            content3();
+            Chat3();
             }
             }
             
          });
     }
     
-     void content3()
+     void Chat3()
     {
-        m_eventObject.TextEvent(m_pm, "对方更新了一条朋友圈");
-        left.Say(m_cm, "帮我改下这个设计？");
-        
-        content4();
+        left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
+        // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
+        // left.Say(m_cm, "帮我改下这个设计？");
+        GameManager.Instance.m_isGameOver = true;
+        GameManager.Instance.SlideInContactMenu();
+        // Chat4();
     }
     
-    void content4()
+    void Chat4()
     {
         right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"怎么改？", message => {
             right.Say(m_pm, message);
-            content5();}
+            Chat5();}
             },
 
             {"晚上又要加班了", message => {
             right.Say(m_pm, message);
-            content5();
-            // m_pm.SetFeelingButton(1);
+            Chat5();
             }
             }
          });
     }
     
-    void content5()
+    void Chat5()
     {
         left.Say(m_cm, "很好改的，字体加大，LOGO加大，^_^");
         
-        content6();
+        Chat6();
     }
     
-    void content6()
+    void Chat6()
     {
         right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"不要不要", message => {
             right.Say(m_pm, message);
-            content7();
+            Chat7();
             }
             },
 
             {"我饿了", message => {
             right.Say(m_pm, message);
-            content7();
+            Chat7();
             }
             }
          });
     }
     
-    void content7()
+    void Chat7()
     {
         left.Say(m_cm, "哈哈哈哈哈哈哈哈");
         
-        content8();
+        Chat8();
     }
     
-    void content8()
+    void Chat8()
     {
         right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
             right.Say(m_pm, message);
-            content9();
+            Chat9();
             }
             },
 
             {"加班", message => {
             right.Say(m_pm, message);
-            content9();
+            Chat9();
             }
             }
          });
     }
     
-    void content9()
+    void Chat9()
     {
         left.Say(m_cm, "哈哈哈哈哈哈哈哈");
         
-        content10();
+        Chat10();
     }
     
-    void content10()
+    void Chat10()
     {
         right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
             right.Say(m_pm, message);
-            content11();
+            Chat11();
             }
             },
 
             {"加班", message => {
             right.Say(m_pm, message);
-            content11();
+            Chat11();
             }
             }
          });
     }
-    void content11()
+    void Chat11()
     {
         left.Say(m_cm, "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈");
         
-        content12();
+        Chat12();
     }
     
-    void content12()
+    void Chat12()
     {
         right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
             right.Say(m_pm, message);
-            content11();
+            Chat11();
             }
             },
 
             {"加班8", message => {
             right.Say(m_pm, message);
-            content11();
+            Chat11();
             }
             }
          });
-    }    
+    }  
+
+    void ChatEnd()
+    {
+        left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
+        // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
+        // left.Say(m_cm, "帮我改下这个设计？");
+        GameManager.Instance.m_isGameOver = true;
+        GameManager.Instance.SlideInContactMenu();
+        // Chat4();
+    }  
    
 }

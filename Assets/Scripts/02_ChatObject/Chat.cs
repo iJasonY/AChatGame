@@ -16,12 +16,7 @@
 
     public void TextChat(PanelManager pm)
     {
-        pm.PopChat(pm.m_leftBubblePrefab, pm.m_leftBubbleposX, m_message);
-    }
-
-    public void TextEvent(PanelManager pm)
-    {
-        // pm.PopEvent(m_message);
+        pm.PopChat(pm.m_leftBubblePrefab, pm.m_leftBubbleposX, m_message, pm.m_soundManager.m_leftAudio);
     }
 	
 	public static void CreatChat(ChatManager cm, string message)

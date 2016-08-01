@@ -6,7 +6,7 @@ public class RightChatObject {
     public void Say(PanelManager pm, string message)
     {
         // 弹出新对话
-        pm.PopChat(pm.m_rightBubblePrefab, -pm.m_leftBubbleposX, message);
+        pm.PopChat(pm.m_rightBubblePrefab, -pm.m_leftBubbleposX, message, pm.m_soundManager.m_rightAudio);
         // 清空待发送消息显示框
         pm.m_waitForSendText.text = " ";
         // 禁用发送按钮

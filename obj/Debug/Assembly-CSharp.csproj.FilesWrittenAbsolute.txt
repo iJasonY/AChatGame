@@ -15,3 +15,7 @@
 /Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
 /Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/DOTween.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/DOTween50.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/DOTween46.dll
+/Users/wuqingxuan/UnityWork/AChatGame/Temp/bin/Debug/DOTween43.dll

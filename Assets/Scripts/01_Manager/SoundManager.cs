@@ -9,6 +9,8 @@ public class SoundManager : MonoBehaviour
 	
     public AudioClip m_leftAudio;	// 左侧发送消息声音
     public AudioClip m_rightAudio;	// 右侧发送消息声音
+	public AudioClip m_systemMessageAudio;	// 系统消息声音
+	public AudioClip m_slideInContactMenuAudio;	
     private AudioSource m_audioSource;
 	public Button m_setSoundButton;
 	public List<Sprite> m_soundButtonImgs = new List<Sprite>();

@@ -5,5 +5,11 @@ public class LeftChatObject {
     {
         Chat.CreatChat(cm, message);
     }
+    /// <summary> 系统通知 </summary>
+    public void TextSystemEvent(PanelManager pm, string message)
+    {
+        pm.PopEvent(message);
+        
+    }
 
 }
