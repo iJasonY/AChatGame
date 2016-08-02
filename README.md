@@ -9,7 +9,8 @@ A Chat Game is a game like [Emily is Away](http://emilyisaway.com/)(Unity) and [
 
 ### Open  
 - Open Assets/Scenes/Level_Mobile  
-- Set Game snece resolution to 9:16  
+- Set Game snece resolution to 9:16   
+ 
 ![](https://github.com/wuqxuan/AChatGame/raw/master/Setting.png)
 
 ### Sound 
