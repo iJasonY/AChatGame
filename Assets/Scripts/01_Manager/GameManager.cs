@@ -14,12 +14,10 @@ public class GameManager : MonoBehaviour
     public Button m_cancleButton;
     public Button m_emilyButton;
     private float m_contactMenuPosX;
-    public bool m_isGameOver = false;
-    public bool m_isBillOver = false;
-
     public SoundManager m_soundManager;
     public PanelManager m_pm;
-    public Emily m_emily;
+    public LevelOne m_levelOne;
+    public IntroductionLevel m_introductionLevel;
     private static GameManager s_instance = null;
     public static GameManager Instance
     {
@@ -30,7 +28,7 @@ public class GameManager : MonoBehaviour
                 s_instance = FindObjectOfType(typeof(GameManager)) as GameManager;
                 if (s_instance == null)
                 {
-                    Debug.Log("Could not locate a GameManager");
+                    Debug.Log("Could not locate GameManager");
                 }
             }
             return s_instance;
@@ -48,16 +46,24 @@ public class GameManager : MonoBehaviour
         m_emilyButton.onClick.AddListener(() => Play());
         m_acceptButton.onClick.AddListener(() => RePlay());
         m_cancleButton.onClick.AddListener(() => PopUpFadeOut());
+        Debug.Log("m_introductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
+        Debug.Log("m_isLevelOver: " + GameSaver.Instance.gameData.IsLevelOneOver);
+
+        // Debug.Log("m_FirstTime: " + GameSaver.m_gameData.GetIsGameStartForTheFirstTime());
+        if (!GameSaver.Instance.gameData.IsIntroductionLevelOver)
+        {
+            m_introductionLevel.StartChat();
+        }
+        
     }
     // 弹出通讯录界面
     public void SlideInContactMenu()
     {
-        if (m_isBillOver)
+        if (GameSaver.Instance.gameData.IsIntroductionLevelOver && !GameSaver.Instance.gameData.IsLevelOneOver)
         {
             SideInAndClearData(1.0f);
-            m_isBillOver = false;
         }
-        if (m_isGameOver && !m_isBillOver)
+        else
         {
             SideInAndClearData(7.5f);
         }
@@ -89,22 +95,21 @@ public class GameManager : MonoBehaviour
     /// <summary> 重新开始游戏 </summary>
     public void RePlay()
     {
-        if (m_isGameOver)
+        if (GameSaver.Instance.gameData.IsLevelOneOver)
         {
             PopUpFadeOut();
             SlideOutContactMenu();
-            m_emily.StartChatWithEmily();
-            m_isGameOver = false;
+            m_levelOne.StartChat();
         }
     }
 
     /// <summary> 开始游戏 </summary>
     public void Play()
     {
-        if (!m_isGameOver)
+        if (!GameSaver.Instance.gameData.IsLevelOneOver)
         {
             SlideOutContactMenu();
-            m_emily.StartChatWithEmily();
+            m_levelOne.StartChat();
         }
         else
         {

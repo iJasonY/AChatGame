@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 
-public class Emily: BaseText
+public class LevelOne: BaseText
 {
     
     //==============================================================================================
     // Methods
 
-    public void StartChatWithEmily()
+    public void StartChat()
     {
         m_cm.m_chatObjectName = "Emily";
         Chat2();     
@@ -35,7 +35,8 @@ public class Emily: BaseText
         left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
         // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
         // left.Say(m_cm, "帮我改下这个设计？");
-        GameManager.Instance.m_isGameOver = true;
+        GameSaver.Instance.gameData.IsLevelOneOver = true;
+        GameSaver.Instance.SaveGameData();
         GameManager.Instance.SlideInContactMenu();
         // Chat4();
     }
@@ -156,7 +157,8 @@ public class Emily: BaseText
         left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
         // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
         // left.Say(m_cm, "帮我改下这个设计？");
-        GameManager.Instance.m_isGameOver = true;
+        GameSaver.Instance.gameData.IsLevelOneOver = true;
+        GameSaver.Instance.SaveGameData();
         GameManager.Instance.SlideInContactMenu();
         // Chat4();
     }  

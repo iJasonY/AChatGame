@@ -57,8 +57,8 @@
      <Compile Include="Assets\Scripts\02_ChatObject\LeftChatObject.cs" />
      <Compile Include="Assets\Scripts\02_ChatObject\RightChatObject.cs" />
      <Compile Include="Assets\Scripts\03_ChatText\BaseContent.cs" />
-     <Compile Include="Assets\Scripts\03_ChatText\Bill.cs" />
-     <Compile Include="Assets\Scripts\03_ChatText\Emily.cs" />
+     <Compile Include="Assets\Scripts\03_ChatText\IntroductionLevel.cs" />
+     <Compile Include="Assets\Scripts\03_ChatText\LevelOne.cs" />
      <Compile Include="Assets\Scripts\04_GameSaver\GameData.cs" />
      <Compile Include="Assets\Scripts\04_GameSaver\GameSaver.cs" />
      <Compile Include="Assets\UnityTestTools\Assertions\AssertionComponent.cs" />

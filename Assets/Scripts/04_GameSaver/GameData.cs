@@ -1,33 +1,19 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using UnityEngine.UI;
+using System.Collections.Generic;
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
-[Serializable]
+[System.Serializable]
 public class GameData{
-	private bool[] m_activeLevels;
-	private bool isTheGameStartedForTheFirstTime;
-	
-	public void SetLevels(bool[] levels)
-	{
-		m_activeLevels = levels;
-	}
-	
-	public bool[] GetLevels()
-	{
-		return m_activeLevels;
-	
-	}
-	
-	//Set and Get IsGameStartForTheFirstTime
-	public void SetIsGameStartForTheFirstTime(bool isTheGameStartedForTheFirstTime)
-	{
-		this.isTheGameStartedForTheFirstTime = isTheGameStartedForTheFirstTime;
+	private bool m_isLevelOneOver;
+	private bool m_isIntroductionLevelOver;
+
+	public bool IsLevelOneOver{
+		get { return m_isLevelOneOver; } 
+		set { m_isLevelOneOver = value; } 
 	}
 
-	public bool GetIsGameStartForTheFirstTime()
-	{
-		return this.isTheGameStartedForTheFirstTime;
+	public bool IsIntroductionLevelOver{
+		get { return m_isIntroductionLevelOver; }
+		set { m_isIntroductionLevelOver = value; }
 	}
 }

@@ -58,7 +58,7 @@ public class PanelManager : MonoBehaviour
     private bool m_isScrollingUp = false;
     public bool m_isChoice = true;
     // 用户点击的选择按钮名字
-    private string m_seletedButtonName;
+    // private string m_seletedButtonName;
     private Dictionary<string, Action<string>> m_choose;
     private Image m_sendButtonImage;
     /// <summary> 发送按钮背景图片 </summary>
@@ -183,25 +183,30 @@ public class PanelManager : MonoBehaviour
     /// <summary> 显示待发送的消息 </summary>
     private void ShowSendText(string message)
     {
+        // 显示待发送的消息
         m_waitForSendText.text = message;
-        // 发送按钮激活
+        // 激活发送按钮
         SetSendButtonState(SendButtonImageType.ENABLE, true);
-        m_seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+        // 获得用户选中的选择按钮的名字（ChoiceButtonOne/ChoiceButtonTwo）
+        string seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+        // 给发送按钮绑定对应的Say()方法，点击发送按钮时，发送用户选择的对话内容
+        AddSayFuncToSendButton(seletedButtonName, m_choose);
     }
-    /// <summary> 发送消息 </summary>
-    private void SendMessage(Dictionary<string, Action<string>> choices)
+    /// <summary> 给发送按钮绑定Say()方法 </summary>
+    private void AddSayFuncToSendButton(string seletedButtonName, Dictionary<string, Action<string>> choices)
     {
         List<string> keys = new List<string>(choices.Keys);
         m_sendButton.onClick.RemoveAllListeners();
-        // 给发送按钮绑定方法
         if (keys.Count == 2)
         {
-            switch (m_seletedButtonName)
+            switch (seletedButtonName)
             {
-                case mc_choiceOne:
+                // 给ChoiceButtonOne绑定方法
+                case mc_choiceButtonOne:
                     m_sendButton.onClick.AddListener(() => choices[keys[0]](keys[0]));
                     break;
-                case mc_choiceTwo:
+                // // 给ChoiceButtonTwo绑定方法
+                case mc_choiceButtonTwo:
                     m_sendButton.onClick.AddListener(() => choices[keys[1]](keys[1]));
                     break;
                 default:
@@ -329,7 +334,6 @@ public class PanelManager : MonoBehaviour
         #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
             TouchInput();
         #endif
-        SendMessage(m_choose);
     }
     /// <summary> 滑动屏幕显示滚动条 </summary>
     private void TouchInput()
@@ -371,7 +375,7 @@ public class PanelManager : MonoBehaviour
     /// <summary> 每行显示最大汉字个数 </summary>
     private const int mc_chineseCharacterCount = 18;
     /// <summary> 选择对话框中两个Button的名字 </summary>
-    private const string mc_choiceOne = "ChoiceButtonOne";
-    private const string mc_choiceTwo = "ChoiceButtonTwo";
+    private const string mc_choiceButtonOne = "ChoiceButtonOne";
+    private const string mc_choiceButtonTwo = "ChoiceButtonTwo";
 
 }

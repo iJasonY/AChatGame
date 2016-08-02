@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 
-public class Bill : BaseText
+public class IntroductionLevel : BaseText
 {
     //==============================================================================================
     // Methods
-    public void Start()
+    public void StartChat()
     {
+        GameManager.Instance.SlideOutContactMenu();
         m_cm.m_chatObjectName = "Bill";
         left.Say(m_cm, "Hi, 哥们");
         Chat();     
@@ -18,11 +19,11 @@ public class Bill : BaseText
          right.Choose(m_pm, new Dictionary<string, Action<string>> {
             {"什么事啊？", message => {
             right.Say(m_pm, message);
-            Chat3();}},
+            ChatEnd();}},
 
             {"在", message => {
             right.Say(m_pm, message);
-            Chat3();
+            ChatEnd();
             }
             }
             
@@ -93,7 +94,7 @@ public class Bill : BaseText
 
             {"OK", message => {
             right.Say(m_pm, message);
-            ChatEnd();
+            // ChatEnd();
             }
             }
          });
@@ -101,7 +102,9 @@ public class Bill : BaseText
     
     void ChatEnd()
     {
-        GameManager.Instance.m_isBillOver = true;
+        GameSaver.Instance.gameData.IsIntroductionLevelOver = true;
+        GameSaver.Instance.SaveGameData();
+        Debug.Log("m_introductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
         GameManager.Instance.SlideInContactMenu();
     }  
 }
