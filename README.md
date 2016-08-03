@@ -10,13 +10,13 @@
 
 ### Project 
 - Open Assets/Scenes/Level_Mobile  
-- Set Game snece resolution to 9:16   
+- Set Game scene resolution to 9:16   
  
 ![](https://github.com/wuqxuan/AChatGame/raw/master/Setting.png)    
 
 ### Play 
-Android [Download]()  
-Mac [Download]()
+<!--[Android]()-->  
+<!--Mac [Download]()-->
 
 ### Sound 
 [open_close](http://freesound.org/people/Taira%20Komori/sounds/211927/)  

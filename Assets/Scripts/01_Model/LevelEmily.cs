@@ -1,14 +1,14 @@
-﻿
+﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class LevelOne: BaseText
+public class LevelEmily: LevelBase
 {
     
     //==============================================================================================
     // Methods
 
-    public void StartChat()
+    public override void StartChat()
     {
         m_cm.m_chatObjectName = "Emily";
         Chat2();     
@@ -16,41 +16,34 @@ public class LevelOne: BaseText
 
     void Chat2()
     {
-         right.Choose(m_pm, new Dictionary<string, Action<string>> {
+         right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"在吗？", message => {
-            right.Say(m_pm, message);
-            Chat3();}},
+            right.Say(m_view, message);
+            ChatEndB();}},
 
             {"Hi, emlily!", message => {
-            right.Say(m_pm, message);
-            Chat3();
+            right.Say(m_view, message);
+            ChatEndB();
             }
             }
             
          });
     }
-    
      void Chat3()
     {
-        left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
-        // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
-        // left.Say(m_cm, "帮我改下这个设计？");
-        GameSaver.Instance.gameData.IsLevelOneOver = true;
-        GameSaver.Instance.SaveGameData();
-        GameManager.Instance.SlideInContactMenu();
-        // Chat4();
+        left.TextSystemEvent(m_view, "Emily开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
     }
     
     void Chat4()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"怎么改？", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat5();}
             },
 
             {"晚上又要加班了", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat5();
             }
             }
@@ -66,15 +59,15 @@ public class LevelOne: BaseText
     
     void Chat6()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"不要不要", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat7();
             }
             },
 
             {"我饿了", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat7();
             }
             }
@@ -90,15 +83,15 @@ public class LevelOne: BaseText
     
     void Chat8()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat9();
             }
             },
 
             {"加班", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat9();
             }
             }
@@ -114,15 +107,15 @@ public class LevelOne: BaseText
     
     void Chat10()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat11();
             }
             },
 
             {"加班", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat11();
             }
             }
@@ -137,30 +130,33 @@ public class LevelOne: BaseText
     
     void Chat12()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"不是吧哈哈", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat11();
             }
             },
 
             {"加班8", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat11();
             }
             }
          });
     }  
 
-    void ChatEnd()
+    void ChatEndA()
     {
-        left.TextSystemEvent(m_pm, "Emily 开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
-        // left.TextSystemEvent(m_pm, "Emily 更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
-        // left.Say(m_cm, "帮我改下这个设计？");
-        GameSaver.Instance.gameData.IsLevelOneOver = true;
-        GameSaver.Instance.SaveGameData();
-        GameManager.Instance.SlideInContactMenu();
-        // Chat4();
+        left.TextSystemEvent(m_view, "Emily开启了好友验证，你还不是他（她）的好友,请先发送好友验证请求，对方验证通过后，才能聊天。");
+        GameSaver.Instance.gameData.IsEmilyLevelOver = true;
+        GameManager.Instance.ChatEndSetting(7.5f);
     }  
+
+    void ChatEndB()
+    {
+        left.TextSystemEvent(m_view, "Emily更新了一条朋友圈，他（她）可能太忙了，没时间回复你的消息。");
+        GameSaver.Instance.gameData.IsEmilyLevelOver = true;
+        GameManager.Instance.ChatEndSetting(7.5f);
+    }
    
 }

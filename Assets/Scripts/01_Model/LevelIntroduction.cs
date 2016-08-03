@@ -2,33 +2,33 @@
 using System;
 using System.Collections.Generic;
 
-public class IntroductionLevel : BaseText
+public class LevelIntroduction : LevelBase
 {
     //==============================================================================================
     // Methods
-    public void StartChat()
+    public override void StartChat()
     {
-        GameManager.Instance.SlideOutContactMenu();
         m_cm.m_chatObjectName = "Bill";
         left.Say(m_cm, "Hi, 哥们");
         Chat();     
     }
-
+    // ToDo: 测试
     void Chat()
     {
-         right.Choose(m_pm, new Dictionary<string, Action<string>> {
+         right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"什么事啊？", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             ChatEnd();}},
 
             {"在", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             ChatEnd();
             }
             }
             
          });
     }
+
     
      void Chat3()
     {
@@ -38,14 +38,14 @@ public class IntroductionLevel : BaseText
 
     void Chat4()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"这不好吧，你跟她都不熟", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat5();}
             },
 
             {"好啊", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat5();
             }
             }
@@ -61,15 +61,15 @@ public class IntroductionLevel : BaseText
     
     void Chat6()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"好吧", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat7();
             }
             },
 
             {"^_^", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             Chat7();
             }
             }
@@ -78,23 +78,23 @@ public class IntroductionLevel : BaseText
     
     void Chat7()
     {
-        left.Say(m_cm, "有空再聊吧，我去溜娃了");
+        left.Say(m_cm, "有时间再聊吧，我去溜娃了");
         
         Chat8();
     }
     
     void Chat8()
     {
-        right.Choose(m_pm, new Dictionary<string, Action<string>> {
+        right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"有空聊", message => {
-            right.Say(m_pm, message);
+            right.Say(m_view, message);
             ChatEnd();
             }
             },
 
             {"OK", message => {
-            right.Say(m_pm, message);
-            // ChatEnd();
+            right.Say(m_view, message);
+            ChatEnd();
             }
             }
          });
@@ -103,8 +103,7 @@ public class IntroductionLevel : BaseText
     void ChatEnd()
     {
         GameSaver.Instance.gameData.IsIntroductionLevelOver = true;
-        GameSaver.Instance.SaveGameData();
-        Debug.Log("m_introductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
-        GameManager.Instance.SlideInContactMenu();
+        GameManager.Instance.ChatEndSetting(1.0f);
+        Debug.Log("IsIntroductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
     }  
 }

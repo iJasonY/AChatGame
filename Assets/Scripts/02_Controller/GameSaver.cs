@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -32,18 +29,19 @@ public class GameSaver : MonoBehaviour
     void Awake()
     {
         // 加载游戏
-        // InitializeGame();
         IsTheGameStartForTheFirstTime();
     }
 
     void IsTheGameStartForTheFirstTime ()
     {
-        // 调试: 更改if条件
-        // PlayerPrefs are stored in ~/Library/Preferences folder, in a file named unity.[company name].[product name].plist
+        // 调试不保存: if内条件不加“!”，保存(发布): if内条件加“!”
+        // PlayerPrefs are stored on Mac: ~/Library/Preferences folder, in a file named unity.[company name].[product name].plist
         if(!PlayerPrefs.HasKey("IsTheGameStartForTheFirstTime"))
 		{
 			PlayerPrefs.SetInt("IsTheGameStartForTheFirstTime", 0);
             m_gameData = new GameData();
+            m_gameData.IsIntroductionLevelOver = false;
+            m_gameData.IsEmilyLevelOver = false;
             SaveGameData();
             LoadGameData();
 		}
@@ -57,9 +55,9 @@ public class GameSaver : MonoBehaviour
     {
         FileStream file = null;
         BinaryFormatter bf = new BinaryFormatter();
-        // /Users/[UserName]/Library/Application Support/[company name]/[product name].
+        // file stored on Mac: /Users/[UserName]/Library/Application Support/[company name]/[product name].
         file = File.Create(Application.persistentDataPath + "/GameData136.txt");
-        Debug.Log(Application.persistentDataPath);
+        // Debug.Log(Application.persistentDataPath);
         bf.Serialize(file, m_gameData);
         file.Close();
     }
@@ -72,8 +70,6 @@ public class GameSaver : MonoBehaviour
         m_gameData = (GameData)bf.Deserialize(file);
         file.Close();
     }
-
-
 }
 
 

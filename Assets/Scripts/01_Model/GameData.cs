@@ -4,12 +4,12 @@ using System;
 
 [System.Serializable]
 public class GameData{
-	private bool m_isLevelOneOver;
+	private bool m_isEmilyLevelOver;
 	private bool m_isIntroductionLevelOver;
 
-	public bool IsLevelOneOver{
-		get { return m_isLevelOneOver; } 
-		set { m_isLevelOneOver = value; } 
+	public bool IsEmilyLevelOver{
+		get { return m_isEmilyLevelOver; } 
+		set { m_isEmilyLevelOver = value; } 
 	}
 
 	public bool IsIntroductionLevelOver{

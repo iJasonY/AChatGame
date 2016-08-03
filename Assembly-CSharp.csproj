@@ -48,19 +48,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\01_Manager\CameraManager.cs" />
-     <Compile Include="Assets\Scripts\01_Manager\ChatManager.cs" />
-     <Compile Include="Assets\Scripts\01_Manager\GameManager.cs" />
-     <Compile Include="Assets\Scripts\01_Manager\PanelManager.cs" />
-     <Compile Include="Assets\Scripts\01_Manager\SoundManager.cs" />
-     <Compile Include="Assets\Scripts\02_ChatObject\Chat.cs" />
-     <Compile Include="Assets\Scripts\02_ChatObject\LeftChatObject.cs" />
-     <Compile Include="Assets\Scripts\02_ChatObject\RightChatObject.cs" />
-     <Compile Include="Assets\Scripts\03_ChatText\BaseContent.cs" />
-     <Compile Include="Assets\Scripts\03_ChatText\IntroductionLevel.cs" />
-     <Compile Include="Assets\Scripts\03_ChatText\LevelOne.cs" />
-     <Compile Include="Assets\Scripts\04_GameSaver\GameData.cs" />
-     <Compile Include="Assets\Scripts\04_GameSaver\GameSaver.cs" />
+     <Compile Include="Assets\Scripts\01_Model\Chat.cs" />
+     <Compile Include="Assets\Scripts\01_Model\ChatObjectLeft.cs" />
+     <Compile Include="Assets\Scripts\01_Model\ChatObjectRight.cs" />
+     <Compile Include="Assets\Scripts\01_Model\GameData.cs" />
+     <Compile Include="Assets\Scripts\01_Model\LevelBase.cs" />
+     <Compile Include="Assets\Scripts\01_Model\LevelEmily.cs" />
+     <Compile Include="Assets\Scripts\01_Model\LevelIntroduction.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\CameraManager.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\ChatManager.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\GameManager.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\GameSaver.cs" />
+     <Compile Include="Assets\Scripts\02_Controller\SoundManager.cs" />
+     <Compile Include="Assets\Scripts\03_View\View.cs" />
      <Compile Include="Assets\UnityTestTools\Assertions\AssertionComponent.cs" />
      <Compile Include="Assets\UnityTestTools\Assertions\AssertionException.cs" />
      <Compile Include="Assets\UnityTestTools\Assertions\Assertions.cs" />

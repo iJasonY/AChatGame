@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
 public class SoundManager : MonoBehaviour
 {
 	//==============================================================================================
@@ -17,14 +16,15 @@ public class SoundManager : MonoBehaviour
 	
 	[SerializeField]
 	private bool m_soundIsActive = true;
-	private Image m_soundButtonImage;
+	private Image m_soundButtonImage;  
+
 
     //==============================================================================================
     // Methods
 	
-    void Start()
+    void Awake()
     {
-        m_audioSource = this.GetComponent<AudioSource>();
+        m_audioSource = gameObject.GetComponent<AudioSource>();
 		m_setSoundButton.onClick.AddListener(()=> SetSound());
 		m_soundButtonImage = m_setSoundButton.GetComponent<Image>();
 		m_soundButtonImage.sprite = m_soundButtonImgs[0];

@@ -11,33 +11,42 @@ public enum SendButtonImageType
     ENABLE = 0,
     DISABLE
 }
-
-public class PanelManager : MonoBehaviour
+public class View : MonoBehaviour
 {
     //==============================================================================================
     // Fields
-    public ChatManager m_chatManager;
+    private ChatManager m_chatManager;
     public SoundManager m_soundManager;
-
-    public GameObject m_topPanel;
+    //======================================
+    // ChatPanel
+    public GameObject m_chatTopBar;
     // 待发送消息
     public Text m_waitForSendText;
     public Button m_sendButton;
-    public Text m_topText;
+    public Text m_topBarText;
     public Button m_leftBubblePrefab;
     public Button m_rightBubblePrefab;
 
     public Button m_eventBubblePrefab;
 
-    public RectTransform m_chatPanel;
+    public RectTransform m_chatContainer;
     public ScrollRect m_panelScroll;
     public GameObject m_handle;
+    //======================================
+    // ContactPanel
+    public RectTransform m_contactPanel;
+    public Image m_popUP;
+    public Button m_acceptButton;
+    public Button m_cancleButton;
+    public Button m_emilyButton;
+    // End ContactMenu
+    //======================================
     private Text m_bubbleText;
     /// <summary> 对话气泡 </summary>
     private Button m_bubble;
 
     /// <summary> 已弹出的对话气泡 </summary>
-    public List<Button> m_popedChatBubbles = new List<Button>();
+    private List<Button> m_popedChatBubbles = new List<Button>();
     public List<Button> m_choiceButtons = new List<Button>();
 
     /// <summary> 单行对话气泡高度（Button） </summary>
@@ -56,10 +65,8 @@ public class PanelManager : MonoBehaviour
     private bool m_isFromFallToScrollUp = false;
     /// <summary> 处在向上滚屏状态 </summary>
     private bool m_isScrollingUp = false;
-    public bool m_isChoice = true;
-    // 用户点击的选择按钮名字
-    // private string m_seletedButtonName;
-    private Dictionary<string, Action<string>> m_choose;
+    /// <summary> 右侧对话是否为空 </summary>
+    public bool m_isRightChatIsNull = true;
     private Image m_sendButtonImage;
     /// <summary> 发送按钮背景图片 </summary>
     public List<Sprite> m_sendButtonSprites = new List<Sprite>();
@@ -68,6 +75,11 @@ public class PanelManager : MonoBehaviour
 
     //==============================================================================================
     // public methods
+    void Awake()
+    {
+        m_chatManager = FindObjectOfType(typeof(ChatManager)) as ChatManager;
+        m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
+    }
 
     void Start()
     {
@@ -81,10 +93,10 @@ public class PanelManager : MonoBehaviour
             m_handle.SetActive(false);
         #endif
 
-        m_topText = m_topPanel.GetComponentInChildren<Text>();
+        m_topBarText = m_chatTopBar.GetComponentInChildren<Text>();
         m_sendButtonImage = m_sendButton.GetComponent<Image>();
 
-        m_topText.text = m_chatManager.m_chatObjectName;
+        m_topBarText.text = m_chatManager.m_chatObjectName;
         SetSendButtonState(SendButtonImageType.DISABLE, false);
         ClearPopedBubble();
     }
@@ -99,7 +111,7 @@ public class PanelManager : MonoBehaviour
         m_newBubblePosY = mc_firstBubblePosY;
         m_popedBubblesHeights = 0.0f;
     }
-    
+
 
     /// <summary> 设置发送按钮状态 </summary>
     public void SetSendButtonState(SendButtonImageType spriteType, bool isInteractable)
@@ -109,28 +121,7 @@ public class PanelManager : MonoBehaviour
         m_sendButton.interactable = isInteractable;
     }
 
-    /// <summary> 设置选择面板 </summary>
-    public void SetChoice(Dictionary<string, Action<string>> choices)
-    {
-        // 显示选择面板
-        ShowChoicePanel(true);
-        m_choose = choices;
 
-        List<string> keys = new List<string>(choices.Keys);
-        for (int i = 0; i < keys.Count; i++)
-        {
-            int buttonIndex = i;
-            if (choices.ContainsKey(keys[i]))
-            {
-                m_choiceButtons[i].GetComponentInChildren<Text>().text = keys[i];
-                // 清空已绑定的方法.
-                m_choiceButtons[i].onClick.RemoveAllListeners();
-                // 给选择按钮绑定ShowSendText()方法
-                m_choiceButtons[i].onClick.AddListener(() => ShowSendText(keys[buttonIndex]));
-            }
-        }
-
-    }
 
     /// <summary> 弹出对话 </summary>
     public void PopChat(Button prefabType, float posX, string message, AudioClip audioType)
@@ -141,10 +132,19 @@ public class PanelManager : MonoBehaviour
         m_soundManager.PlayMusic(audioType);
 
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
-        m_bubbleText.text = InsertWrap(message);
-        m_bubble.transform.SetParent(m_chatPanel, false);
+        // 系统提示不换行
+        if (prefabType.CompareTag("EventBubble"))
+        {
+            m_bubbleText.text = message;
+        }
+        else
+        {
+            // 聊天内容换行
+            m_bubbleText.text = InsertWrap(message);
+        }
+        m_bubble.transform.SetParent(m_chatContainer, false);
         m_popedChatBubbles.Add(m_bubble);
-        
+
     }
 
     public void PopEvent(string message)
@@ -152,20 +152,15 @@ public class PanelManager : MonoBehaviour
         StartCoroutine(WaitForPopEvent(message, 2.0f));
     }
 
-    IEnumerator WaitForPopEvent(string message, float time)
+    IEnumerator WaitForPopEvent(string message, float duration)
     {
-        yield return new WaitForSeconds(time);
-        PopChat(m_eventBubblePrefab, -320.0f, message, null);
+        yield return new WaitForSeconds(duration);
+        PopChat(m_eventBubblePrefab, -350.0f, message, null);
     }
     /// <summary> 隐藏消息选择面板 </summary>
     public void HideChoicePanel()
     {
-        // 隐藏选择面板
-        if (m_chatManager.m_leftChats.Count == 0)
-        {
-            m_isChoice = true;
-            ShowChoicePanel(false);
-        }
+        ShowChoicePanel(false);
     }
 
     /// <summary> 显示消息选择面板 </summary>
@@ -177,11 +172,28 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    //==============================================================================================
-    // private methods
+
+    /// <summary> 设置选择面板 </summary>
+    public void SetChoice(Dictionary<string, Action<string>> choices)
+    {
+        List<string> keys = new List<string>(choices.Keys);
+        for (int i = 0; i < keys.Count; i++)
+        {
+            int buttonIndex = i;
+            if (choices.ContainsKey(keys[i]))
+            {
+                m_choiceButtons[i].GetComponentInChildren<Text>().text = keys[i];
+                // 清空已绑定的方法.
+                m_choiceButtons[i].onClick.RemoveAllListeners();
+                // 给选择按钮绑定ShowSendText()方法
+                m_choiceButtons[i].onClick.AddListener(() => ShowSendText(keys[buttonIndex], choices));
+            }
+        }
+
+    }
 
     /// <summary> 显示待发送的消息 </summary>
-    private void ShowSendText(string message)
+    private void ShowSendText(string message, Dictionary<string, Action<string>> choices)
     {
         // 显示待发送的消息
         m_waitForSendText.text = message;
@@ -190,40 +202,34 @@ public class PanelManager : MonoBehaviour
         // 获得用户选中的选择按钮的名字（ChoiceButtonOne/ChoiceButtonTwo）
         string seletedButtonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
         // 给发送按钮绑定对应的Say()方法，点击发送按钮时，发送用户选择的对话内容
-        AddSayFuncToSendButton(seletedButtonName, m_choose);
+        AddSayFuncToSendButton(seletedButtonName, choices);
     }
     /// <summary> 给发送按钮绑定Say()方法 </summary>
     private void AddSayFuncToSendButton(string seletedButtonName, Dictionary<string, Action<string>> choices)
     {
         List<string> keys = new List<string>(choices.Keys);
         m_sendButton.onClick.RemoveAllListeners();
-        if (keys.Count == 2)
+        switch (seletedButtonName)
         {
-            switch (seletedButtonName)
-            {
-                // 给ChoiceButtonOne绑定方法
-                case mc_choiceButtonOne:
-                    m_sendButton.onClick.AddListener(() => choices[keys[0]](keys[0]));
-                    break;
-                // // 给ChoiceButtonTwo绑定方法
-                case mc_choiceButtonTwo:
-                    m_sendButton.onClick.AddListener(() => choices[keys[1]](keys[1]));
-                    break;
-                default:
-                    break;
-            }
+            // 给ChoiceButtonOne绑定Say()方法
+            case mc_choiceButtonOne:
+                m_sendButton.onClick.AddListener(() => choices[keys[0]](keys[0]));
+                break;
+            // // 给ChoiceButtonTwo绑定Say()方法
+            case mc_choiceButtonTwo:
+                m_sendButton.onClick.AddListener(() => choices[keys[1]](keys[1]));
+                break;
+            default:
+                break;
         }
-        else
-        {
-            Debug.LogError("选择内容与选择按钮数量不匹配");
-        }
+
     }
 
-    /// <summary> 对话内容换行 </summary>
+    /// <summary> 聊天内容换行 </summary>
     private string InsertWrap(string message)
     {
         StringBuilder wrapMessage = new StringBuilder(message);
-        for (int i = mc_chineseCharacterCount; i < wrapMessage.Length; i += (mc_chineseCharacterCount + 1))
+        for (int i = mc_charCountInPerLine; i < wrapMessage.Length; i += (mc_charCountInPerLine + 1))
         {
             wrapMessage.Insert(i, "\n");
         }
@@ -233,7 +239,7 @@ public class PanelManager : MonoBehaviour
     /// <summary> 生成bubble </summary>
     private void InstantiateBubble(Button bubblePrefab, float posX, string message)
     {
-        int heightFactor = message.Length / mc_chineseCharacterCount;
+        int heightFactor = message.Length / mc_charCountInPerLine;
         float newBubbleHeight = m_bubbleCellHeight;
         // 消息包含两行文字，其bubble高度。
         if (heightFactor == 1)
@@ -299,10 +305,10 @@ public class PanelManager : MonoBehaviour
     private void HeightenChatPanel(float deltaHeight)
     {
         // 暂存当前对话框高度
-        var chatPanelHeight = m_chatPanel.sizeDelta.y;
+        var chatPanelHeight = m_chatContainer.sizeDelta.y;
         chatPanelHeight += deltaHeight;
         // 更新对话框高度
-        m_chatPanel.sizeDelta = new Vector2(m_chatPanel.sizeDelta.x, chatPanelHeight);
+        m_chatContainer.sizeDelta = new Vector2(m_chatContainer.sizeDelta.x, chatPanelHeight);
     }
     /// <summary> 向上移动各个Bubble，移动距离是新增Bubble（包括间距）的高度 </summary>
     private void ScrollUpBubbles(float step)
@@ -364,7 +370,7 @@ public class PanelManager : MonoBehaviour
     //==============================================================================================
     // 常量
 
-    
+
     /// <summary> 对话框高度: 从m_firstBubblePosY到m_chatPanelBottomposY </summary>
     private const float mc_originChatPanelHeight = 945f;
 
@@ -372,8 +378,8 @@ public class PanelManager : MonoBehaviour
     private const float mc_firstBubblePosY = 430f;
     private const float mc_textLineHeight = 38.919f;
     private const float mc_secondTextLineHeight = 39.6487f;
-    /// <summary> 每行显示最大汉字个数 </summary>
-    private const int mc_chineseCharacterCount = 18;
+    /// <summary> 每行最大显示字符个数 </summary>
+    private const int mc_charCountInPerLine = 18;
     /// <summary> 选择对话框中两个Button的名字 </summary>
     private const string mc_choiceButtonOne = "ChoiceButtonOne";
     private const string mc_choiceButtonTwo = "ChoiceButtonTwo";
