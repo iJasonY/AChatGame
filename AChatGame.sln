@@ -4,8 +4,6 @@ Project("{95A8B17F-9BF0-9D0B-C545-12D4A6DCDA0B}") = "AChatGame", "Assembly-CShar
 EndProject
 Project("{95A8B17F-9BF0-9D0B-C545-12D4A6DCDA0B}") = "AChatGame", "Assembly-CSharp-Editor-firstpass.csproj", "{05AEB629-C973-F23C-40AE-17BB78C8451B}"
 EndProject
-Project("{95A8B17F-9BF0-9D0B-C545-12D4A6DCDA0B}") = "AChatGame", "Assembly-CSharp-Editor.csproj", "{A3A3271E-C3EC-2805-1594-BBCFB5BCA63C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,10 +18,6 @@ Global
 		{05AEB629-C973-F23C-40AE-17BB78C8451B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05AEB629-C973-F23C-40AE-17BB78C8451B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05AEB629-C973-F23C-40AE-17BB78C8451B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3A3271E-C3EC-2805-1594-BBCFB5BCA63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3A3271E-C3EC-2805-1594-BBCFB5BCA63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3A3271E-C3EC-2805-1594-BBCFB5BCA63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3A3271E-C3EC-2805-1594-BBCFB5BCA63C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
