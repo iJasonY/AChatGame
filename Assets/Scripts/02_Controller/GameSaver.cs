@@ -42,6 +42,7 @@ public class GameSaver : MonoBehaviour
             m_gameData = new GameData();
             m_gameData.IsIntroductionLevelOver = false;
             m_gameData.IsEmilyLevelOver = false;
+            m_gameData.IsGameOver = false;
             SaveGameData();
             LoadGameData();
 		}
@@ -56,7 +57,7 @@ public class GameSaver : MonoBehaviour
         FileStream file = null;
         BinaryFormatter bf = new BinaryFormatter();
         // file stored on Mac: /Users/[UserName]/Library/Application Support/[company name]/[product name].
-        file = File.Create(Application.persistentDataPath + "/GameData136.txt");
+        file = File.Create(Application.persistentDataPath + "/GameData01.txt");
         // Debug.Log(Application.persistentDataPath);
         bf.Serialize(file, m_gameData);
         file.Close();
@@ -66,7 +67,7 @@ public class GameSaver : MonoBehaviour
     {
         FileStream file = null;
         BinaryFormatter bf = new BinaryFormatter();
-        file = File.Open(Application.persistentDataPath + "/GameData136.txt", FileMode.Open);
+        file = File.Open(Application.persistentDataPath + "/GameData01.txt", FileMode.Open);
         m_gameData = (GameData)bf.Deserialize(file);
         file.Close();
     }

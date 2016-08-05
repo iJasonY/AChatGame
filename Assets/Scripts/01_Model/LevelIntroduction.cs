@@ -10,19 +10,19 @@ public class LevelIntroduction : LevelBase
     {
         m_cm.m_chatObjectName = "Bill";
         left.Say(m_cm, "Hi, 哥们");
-        Chat();     
+        Chat2();     
     }
     // ToDo: 测试
-    void Chat()
+    void Chat2()
     {
          right.Choose(m_view, new Dictionary<string, Action<string>> {
             {"什么事啊？", message => {
             right.Say(m_view, message);
-            ChatEnd();}},
+            Chat3();}},
 
             {"在", message => {
             right.Say(m_view, message);
-            ChatEnd();
+            Chat3();
             }
             }
             
@@ -99,7 +99,8 @@ public class LevelIntroduction : LevelBase
             }
          });
     }
-    
+
+    /// <summary> 引导关IntroductionLevel结束 </summary>
     void ChatEnd()
     {
         GameSaver.Instance.gameData.IsIntroductionLevelOver = true;

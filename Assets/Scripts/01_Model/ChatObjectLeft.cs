@@ -5,10 +5,21 @@ public class ChatObjectLeft {
     {
         Chat.CreatLeftChat(cm, message);
     }
-    /// <summary> 系统通知 </summary>
-    public void TextSystemEvent(View view, string message)
+    /// <summary> 更新朋友圈 </summary>
+    public void TextEventUpdate(View view, string eventMessage)
     {
-        view.PopEvent(message);   
+        view.PopEventUpdate(eventMessage);   
+    }
+
+    /// <summary> 好友验证 </summary>
+    public void TextEventVerify(View view, string eventMessage)
+    {
+        view.PopEventVerify(eventMessage);   
+    }
+
+    public void TextReCall(View view, string reCall)
+    {
+        view.PopReCall(reCall);
     }
 
 }

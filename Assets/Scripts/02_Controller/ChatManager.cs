@@ -7,7 +7,7 @@ public class ChatManager : MonoBehaviour
     private View m_view; 
     public string m_chatObjectName;
     public Queue<Chat> m_leftChats = new Queue<Chat>();
-    private float m_timer = -3.0f;
+    private float m_timer = 0.0f;
     private string m_otherIsTyping = "对方正在输入...";
 
     //==============================================================================================

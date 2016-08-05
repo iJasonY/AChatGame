@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     // Fields
     private View m_view;
     private LevelEmily m_levelEmily;
+    private LevelEmilyNext m_levelEmilyNext;
     private LevelIntroduction m_levelIntroduction;
     private static GameManager s_instance = null;
     public static GameManager Instance
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
         // 关卡
         m_levelIntroduction = FindObjectOfType(typeof(LevelIntroduction)) as LevelIntroduction;
         m_levelEmily = FindObjectOfType(typeof(LevelEmily)) as LevelEmily;
+        m_levelEmilyNext = FindObjectOfType(typeof(LevelEmilyNext)) as LevelEmilyNext;
     }
     void Start()
     {
@@ -42,8 +44,8 @@ public class GameManager : MonoBehaviour
         m_view.m_emilyButton.onClick.AddListener(() => Play());
         m_view.m_acceptButton.onClick.AddListener(() => Accept());
         m_view.m_cancleButton.onClick.AddListener(() => Cancle());
-        // Debug.Log("IsEmilyLevelOver: " + GameSaver.Instance.gameData.IsEmilyLevelOver);
-        // Debug.Log("IsIntroductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
+        Debug.Log("IsEmilyLevelOver: " + GameSaver.Instance.gameData.IsEmilyLevelOver);
+        Debug.Log("IsIntroductionLevelOver: " + GameSaver.Instance.gameData.IsIntroductionLevelOver);
         // 初次开始游戏，引导关自动运行
         if (!GameSaver.Instance.gameData.IsIntroductionLevelOver)
         {
@@ -51,28 +53,50 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary> 开始游戏 </summary>
+    /// <summary> 点击EmilyButton，开始游戏 </summary>
     private void Play()
     {
-        if (!GameSaver.Instance.gameData.IsEmilyLevelOver)
-        {
-            ChatStart(m_levelEmily);
+        if (GameSaver.Instance.gameData.IsIntroductionLevelOver)
+        {   
+            // 按顺序关卡加载流程
+            if (!GameSaver.Instance.gameData.IsEmilyLevelOver)
+            {
+                if (!GameSaver.Instance.gameData.IsGameOver)
+                {
+                    // LevelIntroduction结束，开始LevelEmiy
+                     ChatStart(m_levelEmily);
+                }
+                // LevelEmiy触发GameOver发生, 重新进入按顺序加载游戏关卡
+                else
+                {
+                    PopUpFadeIn();
+                    GameSaver.Instance.gameData.IsGameOver = false;
+                    GameSaver.Instance.SaveGameData();
+                }
+            }
+            else if (!GameSaver.Instance.gameData.IsGameOver)
+            {
+                // LevelEmiy结束，开始LevelEmiyNext
+                ChatStart(m_levelEmilyNext);
+            }
+            else
+            {
+                // 关卡全部结束，弹出重新开始窗口
+                PopUpFadeIn();
+            }
+            // LevelEmiy触发GameOver发生，弹出重新开始窗口
+            if (GameSaver.Instance.gameData.IsGameOver)
+            {
+                PopUpFadeIn();
+            }
         }
-        else
-        {
-            PopUpFadeIn();
-        }
-
     }
 
     /// <summary> 确定重新开始游戏 </summary>
     private void Accept()
     {
-        if (GameSaver.Instance.gameData.IsEmilyLevelOver)
-        {
-            PopUpFadeOut();
-            ChatStart(m_levelEmily);
-        }
+        PopUpFadeOut();
+        ChatStart(m_levelEmily);
     }
 
     private void Cancle()

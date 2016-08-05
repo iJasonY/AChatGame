@@ -8,7 +8,7 @@ public class ChatObjectRight
     public void Say(View view, string message)
     {
         // 弹出新对话
-        view.PopChat(view.m_rightBubblePrefab, -view.m_leftBubbleposX, message, view.m_soundManager.m_rightAudio);
+        view.PopBubble(view.m_rightBubblePrefab, -view.m_leftBubbleposX, message, view.m_soundManager.m_rightAudio);
         // 清空待发送消息显示框
         view.m_waitForSendText.text = " ";
         // 禁用发送按钮

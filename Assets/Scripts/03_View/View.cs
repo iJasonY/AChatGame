@@ -27,7 +27,9 @@ public class View : MonoBehaviour
     public Button m_leftBubblePrefab;
     public Button m_rightBubblePrefab;
 
-    public Button m_eventBubblePrefab;
+    public Button m_eventUpdateBubblePrefab;
+    public Button m_eventVerifyBubblePrefab;
+    public Button m_reCallBubblePrefab;
 
     public RectTransform m_chatContainer;
     public ScrollRect m_panelScroll;
@@ -50,7 +52,15 @@ public class View : MonoBehaviour
     public List<Button> m_choiceButtons = new List<Button>();
 
     /// <summary> 单行对话气泡高度（Button） </summary>
-    private float m_bubbleCellHeight = 78.91891f + 20f;
+    private float m_chatBubbleHeight = 78.91891f + m_gapBetweenBubble;
+    /// <summary> 更新朋友圈气泡高度 </summary>
+    private float m_updateBubbleHeight = 124.5528f + m_gapBetweenBubble;
+    /// <summary> 好友验证气泡高度 </summary>
+    private float m_verifyBubbleHeight = 172.2493f + m_gapBetweenBubble;
+    /// <summary> 撤回消息气泡高度 </summary>
+    private float m_recallBubbleHeight = 52.52032f + m_gapBetweenBubble;
+    /// <summary> 气泡间的间隙 </summary>
+    private static float m_gapBetweenBubble = 30f;
     /// <summary> 已弹出对话的总高度 </summary>
     private float m_popedBubblesHeights = 0.0f;
     /// <summary> 新弹出对话气泡的posY </summary>
@@ -58,7 +68,7 @@ public class View : MonoBehaviour
 
     /// <summary> 对话框底边的posY </summary>
     private float m_chatPanelBottomposY = -515f;
-    /// <summary> 对话Bubble的posX坐标 </summary>
+    /// <summary> 左侧对话Bubble的posX </summary>
     public float m_leftBubbleposX = -360f;
 
     /// <summary> 由下落转换到向上滚屏状态 </summary>
@@ -70,15 +80,14 @@ public class View : MonoBehaviour
     private Image m_sendButtonImage;
     /// <summary> 发送按钮背景图片 </summary>
     public List<Sprite> m_sendButtonSprites = new List<Sprite>();
-
-
-
+ 
     //==============================================================================================
     // public methods
     void Awake()
     {
         m_chatManager = FindObjectOfType(typeof(ChatManager)) as ChatManager;
         m_soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
+        // m_layout = m_bubble.GetComponent<LayoutElement>();
     }
 
     void Start()
@@ -110,6 +119,10 @@ public class View : MonoBehaviour
         m_popedChatBubbles.Clear();
         m_newBubblePosY = mc_firstBubblePosY;
         m_popedBubblesHeights = 0.0f;
+        m_chatContainer.sizeDelta = new Vector2(m_chatContainer.sizeDelta.x, 1100f);
+        m_chatPanelBottomposY = -515f;
+        m_isScrollingUp = false;
+        m_isScrollingUp = false;
     }
 
 
@@ -121,10 +134,8 @@ public class View : MonoBehaviour
         m_sendButton.interactable = isInteractable;
     }
 
-
-
     /// <summary> 弹出对话 </summary>
-    public void PopChat(Button prefabType, float posX, string message, AudioClip audioType)
+    public void PopBubble(Button prefabType, float posX, string message, AudioClip audioType)
     {
         // 移动滑动条到底端
         StartCoroutine(MoveTowardsBottom(0.1f, m_panelScroll.verticalNormalizedPosition, 0));
@@ -133,7 +144,7 @@ public class View : MonoBehaviour
 
         m_bubbleText = m_bubble.GetComponentInChildren<Text>();
         // 系统提示不换行
-        if (prefabType.CompareTag("EventBubble"))
+        if (prefabType.CompareTag("EventUpdateBubble") || prefabType.CompareTag("EventVerifyBubble"))
         {
             m_bubbleText.text = message;
         }
@@ -146,17 +157,28 @@ public class View : MonoBehaviour
         m_popedChatBubbles.Add(m_bubble);
 
     }
-
-    public void PopEvent(string message)
+    /// <summary> 弹出更新朋友圈消息 </summary>
+    public void PopEventUpdate(string eventMessage)
     {
-        StartCoroutine(WaitForPopEvent(message, 2.0f));
+        StartCoroutine(WaitForPop(eventMessage,m_eventUpdateBubblePrefab, -350f, 2.0f));
+    }
+    /// <summary> 弹出好友验证消息 </summary>
+    public void PopEventVerify(string eventMessage)
+    {
+        StartCoroutine(WaitForPop(eventMessage,m_eventVerifyBubblePrefab, -350f, 2.0f));
+    }
+    /// <summary> 弹出撤回消息 </summary>
+    public void PopReCall(string reCall)
+    {
+        StartCoroutine(WaitForPop(reCall, m_reCallBubblePrefab, -149.42f, 2.0f));
     }
 
-    IEnumerator WaitForPopEvent(string message, float duration)
+    IEnumerator WaitForPop(string message, Button prefabType, float posX, float duration)
     {
         yield return new WaitForSeconds(duration);
-        PopChat(m_eventBubblePrefab, -350.0f, message, null);
+        PopBubble(prefabType, posX, message, null);
     }
+
     /// <summary> 隐藏消息选择面板 </summary>
     public void HideChoicePanel()
     {
@@ -171,8 +193,6 @@ public class View : MonoBehaviour
             m_choiceButtons[i].gameObject.SetActive(isActive);
         }
     }
-
-
     /// <summary> 设置选择面板 </summary>
     public void SetChoice(Dictionary<string, Action<string>> choices)
     {
@@ -212,17 +232,16 @@ public class View : MonoBehaviour
         switch (seletedButtonName)
         {
             // 给ChoiceButtonOne绑定Say()方法
-            case mc_choiceButtonOne:
+            case "ChoiceButtonOne":
                 m_sendButton.onClick.AddListener(() => choices[keys[0]](keys[0]));
                 break;
             // // 给ChoiceButtonTwo绑定Say()方法
-            case mc_choiceButtonTwo:
+            case "ChoiceButtonTwo":
                 m_sendButton.onClick.AddListener(() => choices[keys[1]](keys[1]));
                 break;
             default:
                 break;
         }
-
     }
 
     /// <summary> 聊天内容换行 </summary>
@@ -240,7 +259,31 @@ public class View : MonoBehaviour
     private void InstantiateBubble(Button bubblePrefab, float posX, string message)
     {
         int heightFactor = message.Length / mc_charCountInPerLine;
-        float newBubbleHeight = m_bubbleCellHeight;
+        float newBubbleHeight = m_chatBubbleHeight;
+        switch (bubblePrefab.tag)
+        {
+            case "EventVerifyBubble":
+                newBubbleHeight = m_verifyBubbleHeight;
+                break;
+            case "EventUpdateBubble":
+                newBubbleHeight = m_updateBubbleHeight;
+                break;
+            case "ReCallBubble":
+                newBubbleHeight = m_recallBubbleHeight;
+                break;
+
+            default:
+                newBubbleHeight = GetNewChatBubbleHeight(newBubbleHeight, heightFactor);
+                break;
+        }
+        m_bubble = Instantiate(bubblePrefab) as Button;
+        // Debug.Log("m_bublle's height: " + m_bubble.GetComponent<RectTransform>().rect.height);
+        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, GetNewBubblePosY(newBubbleHeight));
+    }
+
+    private float GetNewChatBubbleHeight(float bubbleHeight, int heightFactor)
+    {
+        float newBubbleHeight = bubbleHeight;
         // 消息包含两行文字，其bubble高度。
         if (heightFactor == 1)
         {
@@ -251,9 +294,7 @@ public class View : MonoBehaviour
         {
             newBubbleHeight += mc_secondTextLineHeight + (heightFactor - 1) * mc_textLineHeight;
         }
-
-        m_bubble = Instantiate(bubblePrefab) as Button;
-        m_bubble.GetComponent<RectTransform>().anchoredPosition = new Vector2(posX, GetNewBubblePosY(newBubbleHeight));
+        return newBubbleHeight;
     }
 
     /// <summary> 计算新插入对话的Bubble的posY </summary>
@@ -381,7 +422,7 @@ public class View : MonoBehaviour
     /// <summary> 每行最大显示字符个数 </summary>
     private const int mc_charCountInPerLine = 18;
     /// <summary> 选择对话框中两个Button的名字 </summary>
-    private const string mc_choiceButtonOne = "ChoiceButtonOne";
-    private const string mc_choiceButtonTwo = "ChoiceButtonTwo";
+    // private const string mc_choiceButtonOne = "ChoiceButtonOne";
+    // private const string mc_choiceButtonTwo = "ChoiceButtonTwo";
 
 }
