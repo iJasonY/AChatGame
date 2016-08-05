@@ -15,7 +15,7 @@
 ![](https://github.com/wuqxuan/AChatGame/raw/master/Setting.png)    
 
 ### Play 
-<!--[Android]()-->  
+[Android](https://pan.baidu.com/s/1gePE4O7) 
 <!--Mac [Download]()-->
 
 ### Sound 
